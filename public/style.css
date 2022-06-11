@@ -23,7 +23,7 @@ a {
 }
 
 .usernamelink {
-    color: #18508f;
+    /* color: #18508f; */
     text-decoration: none;
 }
 
@@ -77,4 +77,41 @@ a {
     height: 50px;
     width: 50px;
     margin-right: 10px;
+}
+
+img {
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+}
+
+
+span {
+  display: inline-block;
+  animation: stretch 2.5s cubic-bezier(0.4, 1.4, 0.75, 0.9) 1;
+  transform-origin: center;
+  color: black;
+  text-shadow: 0 0 0 black;
+}
+
+@keyframes stretch {
+  5% {
+    transform: scaleX(5000);
+    opacity: 0.1;
+  }
+  15% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* The typing effect */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+/* The typewriter cursor effect */
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: orange; }
 }

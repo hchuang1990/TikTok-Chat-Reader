@@ -65,26 +65,31 @@ function isPendingStreak(data) {
 function addChatItem(color, data, text, summarize) {
     let container = $('.chatcontainer');
 
-    if (container.find('div').length > 500) {
-        container.find('div').slice(0, 200).remove();
+    if (container.find('div').length > 30) {
+        container.find('div').slice(0, 10).remove();
     }
 
-    container.find('.temporary').remove();;
-
+    // container.find('.temporary').remove();;
+    //<b>${generateUsernameLink(data)}:</b> 
     container.append(`
-        <div class=${summarize ? 'temporary' : 'static'}>
-            <img class="miniprofilepicture" src="${data.profilePictureUrl}">
+        <div class="static">
             <span>
-                <b>${generateUsernameLink(data)}:</b> 
-                <span style="color:${color}">${sanitize(text)}</span>
+                <img class="miniprofilepicture" src="${data.profilePictureUrl}">
+                <span>${sanitize(data.uniqueId)}</span>
+                <span>${sanitize(text)}</span>
             </span>
         </div>
     `);
 
-    container.stop();
-    container.animate({
-        scrollTop: container[0].scrollHeight
-    }, 400);
+    // animated.addEventListener('animationend', () => {
+    //     console.log('Animation ended');
+    // });
+
+    container.scrollTop(container[0].scrollHeight);
+    // container.stop();
+    // container.animate({
+    //     scrollTop: container[0].scrollHeight
+    // }, 400);
 }
 
 /**
@@ -156,19 +161,19 @@ connection.on('like', (msg) => {
 })
 
 // Member join
-let joinMsgDelay = 0;
-connection.on('member', (msg) => {
-    let addDelay = 250;
-    if (joinMsgDelay > 500) addDelay = 100;
-    if (joinMsgDelay > 1000) addDelay = 0;
+// let joinMsgDelay = 0;
+// connection.on('member', (msg) => {
+//     let addDelay = 250;
+//     if (joinMsgDelay > 500) addDelay = 100;
+//     if (joinMsgDelay > 1000) addDelay = 0;
 
-    joinMsgDelay += addDelay;
+//     joinMsgDelay += addDelay;
 
-    setTimeout(() => {
-        joinMsgDelay -= addDelay;
-        addChatItem('#21b2c2', msg, 'joined', true);
-    }, joinMsgDelay);
-})
+//     setTimeout(() => {
+//         joinMsgDelay -= addDelay;
+//         addChatItem('#21b2c2', msg, 'joined', true);
+//     }, joinMsgDelay);
+// })
 
 // New chat comment received
 connection.on('chat', (msg) => {

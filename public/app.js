@@ -14,6 +14,8 @@ $(document).ready(() => {
             connect();
         }
     });
+    // var canvas = document.getElementById('myCanvas');
+    // paper.setup(canvas);
 })
 
 function connect() {
@@ -98,6 +100,21 @@ function addChatItem(color, data, text, summarize) {
         // container.animate({
         //     scrollTop: container[0].scrollHeight
         // }, 400);
+
+
+    // Create a Paper.js Path to draw a line into it:
+    // var path = new paper.Path();
+    // // Give the stroke a color
+    // path.strokeColor = 'black';
+    // var start = new paper.Point(100, 100);
+    // // Move to start and draw a line from there
+    // path.moveTo(start);
+    // // Note that the plus operator on Point objects does not work
+    // // in JavaScript. Instead, we need to call the add() function:
+    // path.lineTo(start.add([200, -50]));
+    // // Draw the view now:
+    // paper.view.draw(); 
+
 }
 
 /**
@@ -207,3 +224,70 @@ connection.on('social', (data) => {
 connection.on('streamEnd', () => {
     $('#stateText').text('Stream ended.');
 })
+
+
+// // Create a Paper.js Path to draw a line into it:
+// var path = new Path();
+// // Give the stroke a color
+// path.strokeColor = 'black';
+// var start = new Point(100, 100);
+// // Move to start and draw a line from there
+// path.moveTo(start);
+// // Note the plus operator on Point objects.
+// // PaperScript does that for us, and much more!
+// path.lineTo(start + [100, -50]);
+
+
+
+function autoType(elementClass, typingSpeed) {
+    var thhis = $(elementClass);
+    thhis.css({
+        "position": "relative",
+        "display": "inline-block"
+    });
+    thhis.prepend('<div class="cursor" style="right: initial; left:0;"></div>');
+    thhis = thhis.find(".text-js");
+    var text = thhis.text().trim().split('');
+    var amntOfChars = text.length;
+    var newString = "";
+    thhis.text("|");
+    setTimeout(function () {
+        thhis.css("opacity", 1);
+        thhis.prev().removeAttr("style");
+        thhis.text("");
+        for (var i = 0; i < amntOfChars; i++) {
+            (function (i, char) {
+                setTimeout(function () {
+                    newString += char;
+                    thhis.text(newString);
+                }, i * typingSpeed);
+            })(i + 1, text[i]);
+        }
+    }, 1500);
+}
+
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.getElementById('myCanvas').appendChild(renderer.domElement);
+
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+
+camera.position.z = 5;
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+
+    renderer.render(scene, camera);
+};
+
+animate();

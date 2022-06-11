@@ -14,13 +14,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+    <script type="text/javascript" src="./dist/paper-full.js"></script>
     <script src="connection.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
 </head>
 <body>
     <div class="head">
         <h1>TikTok LIVE Chat Reader</h1>
-        <span class="subTitle">Source: <a href="https://github.com/zerodytrash/TikTok-Chat-Reader">https://github.com/zerodytrash/TikTok-Chat-Reader</a></span>      
+        <span class="subTitle">Source: <a href="https://github.com/zerodytrash/TikTok-Chat-Reader">https://github.com/zerodytrash/TikTok-Chat-Reader</a></span>
     </div>
 
     <div>
@@ -29,7 +30,7 @@
 
     <div class="inputFields">
         <p>Enter the <b>@username</b> of a user who is currently live:</p>
-        <input type="text" id="uniqueIdInput" value="chill.buddha">
+        <input type="text" id="uniqueIdInput" value="by_ciklala">
         <input type="button" id="connectButton" value="connect">
     </div>
 
@@ -43,6 +44,8 @@
             </td>
         </tr>
     </table>
+
+    <canvas id="myCanvas" resize></canvas>
 
     <table class="splitchattable">
         <tr>

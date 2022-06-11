@@ -1,9 +1,30 @@
 {
+  "name": "threejs-light-tutorial",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
   "dependencies": {
+    "parcel-bundler": "^1.12.5",
+    "three": "^0.141.0",
+    "three-mesh-ui": "^6.4.4",
     "consumer-queue": "^1.1.0",
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
     "socket.io": "^4.4.1",
-    "tiktok-live-connector": "^0.9.20"
+    "tiktok-live-connector": "^0.9.20",
+    "troika-three-text": "^0.46.4"
+  },
+  "devDependencies": {
+    "parcel-plugin-static-files-copy": "^2.6.0"
+  },
+  "staticFiles": {
+    "staticPath": [
+      "assets"
+    ]
   }
 }

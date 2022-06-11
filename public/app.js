@@ -66,33 +66,41 @@ function addChatItem(color, data, text, summarize) {
 
     let container = $('.chatcontainer');
 
-    if (container.find('div').length > 30) {
-        container.find('div').slice(0, 10).remove();
+    if (container.find('div').length > 40) {
+        container.find('div').slice(0, 40).remove();
+        // todo background scroll
+        container.animate({
+            scrollTop: 300,
+            // scrollHeight: 200
+        }, 400);
     }
 
     var newDiv = document.createElement("div");
     // container.find('.temporary').remove();;
     //<b>${generateUsernameLink(data)}:</b> 
-    container.append(`
-        <div class="static">
+    newDiv.innerHTML = `
+        <div>
             <span>
                 <img class="miniprofilepicture" src="${data.profilePictureUrl}">
-                <span>${sanitize(data.uniqueId)}</span>
-                <span>${sanitize(text)}</span>
+                ${sanitize(data.uniqueId)}
+                ${sanitize(text)}
             </span>
         </div>
-    `);
+    `;
 
+    container.append(newDiv);
 
-    // $("#sun").bind('oanimationend animationend webkitAnimationEnd', function () {
-    //     alert("fin")
-    // });
+    newDiv.addEventListener('animationend', () => {
+        console.log('Animation ended');
+        // container.stop();
+        // container.scrollTop(container[0].scrollHeight);
+        // container.animate({
+        //     scrollTop: 300,
+        //     // scrollHeight: 200
+        // }, 400);
+    });
 
-    // animated.addEventListener('animationend', () => {
-    //     console.log('Animation ended');
-    // });
-
-    container.scrollTop(container[0].scrollHeight);
+    // container.scrollTop(container[0].scrollHeight);
         // container.stop();
         // container.animate({
         //     scrollTop: container[0].scrollHeight

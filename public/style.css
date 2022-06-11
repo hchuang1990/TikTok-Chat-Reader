@@ -60,8 +60,7 @@ a {
 }
 
 .chatcontainer {
-    min-width: 400px;
-    max-width: calc(100vw - 430px);
+    width: 800px;
 }
 
 .giftcontainer {

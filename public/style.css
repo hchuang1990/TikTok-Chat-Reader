@@ -93,7 +93,7 @@ span {
 
 @keyframes stretch {
   10% {
-    transform: scaleX(5000);
+    transform: scaleX(1000000);
     opacity: 0.1;
     color:  rgb(0, 0, 0);
     /* box-shadow: 0 0 0px 1px rgba(142, 255, 249, 0.753); */

@@ -36,8 +36,16 @@ io.on('connection', (socket) => {
             //     return loop();
             // }, 1000);
             return loop();
+        }).catch((error)=>{
+            console.log('stop listen')
         });
     }
+
+    function stopLoop(){
+        console.log('stopLoop')
+        queue.cancelWait();
+    }
+
     socket.on('setUniqueId', (uniqueId, options) => {
 
         // Prohibit the client from specifying these options (for security reasons)
@@ -54,7 +62,7 @@ io.on('connection', (socket) => {
         // Connect to the given username (uniqueId)
         try {
             tiktokConnectionWrapper = new TikTokConnectionWrapper(uniqueId, options, true);
-            tiktokConnectionWrapper.connect();            
+            tiktokConnectionWrapper.connect();      
         } catch(err) {
             socket.emit('disconnected', err.toString());
             return;
@@ -62,28 +70,32 @@ io.on('connection', (socket) => {
 
         // Redirect wrapper control events once
         tiktokConnectionWrapper.once('connected', state => {
-            loop();
+            console.log('startLoop')
+            loop();      
             socket.emit('tiktokConnected', state)}
         );
-        tiktokConnectionWrapper.once('disconnected', reason => socket.emit('tiktokDisconnected', reason));
+        tiktokConnectionWrapper.once('disconnected', reason => {
+            socket.emit('tiktokDisconnected', reason)
+        });
 
         // Notify client when stream ends
         tiktokConnectionWrapper.connection.on('streamEnd', () => socket.emit('streamEnd'));
 
         // Redirect message events
-        tiktokConnectionWrapper.connection.on('roomUser', msg => socket.emit('roomUser', msg));
-        tiktokConnectionWrapper.connection.on('member', msg => enqueue('member', msg));
+        tiktokConnectionWrapper.connection.on('roomUser', msg => enqueue('roomUser', msg));
+        // tiktokConnectionWrapper.connection.on('member', msg => enqueue('member', msg));
         tiktokConnectionWrapper.connection.on('chat', msg => enqueue('chat', msg));
         tiktokConnectionWrapper.connection.on('gift', msg => enqueue('gift', msg));
         tiktokConnectionWrapper.connection.on('social', msg => enqueue('social', msg));
-        tiktokConnectionWrapper.connection.on('like', msg => socket.emit('like', msg));
-        tiktokConnectionWrapper.connection.on('questionNew', msg => socket.emit('questionNew', msg));
-        tiktokConnectionWrapper.connection.on('linkMicBattle', msg => socket.emit('linkMicBattle', msg));
-        tiktokConnectionWrapper.connection.on('linkMicArmies', msg => socket.emit('linkMicArmies', msg));
-        tiktokConnectionWrapper.connection.on('liveIntro', msg => socket.emit('liveIntro', msg));
+        tiktokConnectionWrapper.connection.on('like', msg => enqueue('like', msg));
+        tiktokConnectionWrapper.connection.on('questionNew', msg => enqueue('questionNew', msg));
+        tiktokConnectionWrapper.connection.on('linkMicBattle', msg => enqueue('linkMicBattle', msg));
+        tiktokConnectionWrapper.connection.on('linkMicArmies', msg => enqueue('linkMicArmies', msg));
+        tiktokConnectionWrapper.connection.on('liveIntro', msg => enqueue('liveIntro', msg));
     });
 
     socket.on('disconnect', () => {
+        stopLoop();
         if(tiktokConnectionWrapper) {
             tiktokConnectionWrapper.disconnect();
         }

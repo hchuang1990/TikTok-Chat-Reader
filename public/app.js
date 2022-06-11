@@ -66,13 +66,9 @@ function addChatItem(color, data, text, summarize) {
 
     let container = $('.chatcontainer');
 
-    if (container.find('div').length > 40) {
-        container.find('div').slice(0, 40).remove();
+    if (container.find('div').length > 10) {
+        container.find('div').slice(0, 10).remove();
         // todo background scroll
-        container.animate({
-            scrollTop: 300,
-            // scrollHeight: 200
-        }, 400);
     }
 
     var newDiv = document.createElement("div");
@@ -92,12 +88,9 @@ function addChatItem(color, data, text, summarize) {
 
     newDiv.addEventListener('animationend', () => {
         console.log('Animation ended');
-        // container.stop();
-        // container.scrollTop(container[0].scrollHeight);
-        // container.animate({
-        //     scrollTop: 300,
-        //     // scrollHeight: 200
-        // }, 400);
+        container.animate({
+            scrollTop: 0
+        }, 400);
     });
 
     // container.scrollTop(container[0].scrollHeight);

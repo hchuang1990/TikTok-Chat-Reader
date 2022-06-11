@@ -89,13 +89,14 @@ span {
   animation: stretch 2.5s cubic-bezier(0.4, 1.4, 0.75, 0.9) 1;
   transform-origin: center;
   color: black;
-  text-shadow: 0 0 0 black;
 }
 
 @keyframes stretch {
-  5% {
+  10% {
     transform: scaleX(5000);
     opacity: 0.1;
+    color:  rgb(0, 0, 0);
+    /* box-shadow: 0 0 0px 1px rgba(142, 255, 249, 0.753); */
   }
   15% {
     transform: scaleX(1);

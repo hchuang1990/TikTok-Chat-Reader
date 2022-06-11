@@ -161,19 +161,19 @@ connection.on('like', (msg) => {
 })
 
 // Member join
-// let joinMsgDelay = 0;
-// connection.on('member', (msg) => {
-//     let addDelay = 250;
-//     if (joinMsgDelay > 500) addDelay = 100;
-//     if (joinMsgDelay > 1000) addDelay = 0;
+let joinMsgDelay = 0;
+connection.on('member', (msg) => {
+    let addDelay = 250;
+    if (joinMsgDelay > 500) addDelay = 100;
+    if (joinMsgDelay > 1000) addDelay = 0;
 
-//     joinMsgDelay += addDelay;
+    joinMsgDelay += addDelay;
 
-//     setTimeout(() => {
-//         joinMsgDelay -= addDelay;
-//         addChatItem('#21b2c2', msg, 'joined', true);
-//     }, joinMsgDelay);
-// })
+    setTimeout(() => {
+        joinMsgDelay -= addDelay;
+        addChatItem('#21b2c2', msg, 'joined', true);
+    }, joinMsgDelay);
+})
 
 // New chat comment received
 connection.on('chat', (msg) => {

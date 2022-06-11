@@ -63,12 +63,14 @@ function isPendingStreak(data) {
  * Add a new message to the chat container
  */
 function addChatItem(color, data, text, summarize) {
+
     let container = $('.chatcontainer');
 
     if (container.find('div').length > 30) {
         container.find('div').slice(0, 10).remove();
     }
 
+    var newDiv = document.createElement("div");
     // container.find('.temporary').remove();;
     //<b>${generateUsernameLink(data)}:</b> 
     container.append(`
@@ -81,15 +83,20 @@ function addChatItem(color, data, text, summarize) {
         </div>
     `);
 
+
+    // $("#sun").bind('oanimationend animationend webkitAnimationEnd', function () {
+    //     alert("fin")
+    // });
+
     // animated.addEventListener('animationend', () => {
     //     console.log('Animation ended');
     // });
 
     container.scrollTop(container[0].scrollHeight);
-    // container.stop();
-    // container.animate({
-    //     scrollTop: container[0].scrollHeight
-    // }, 400);
+        // container.stop();
+        // container.animate({
+        //     scrollTop: container[0].scrollHeight
+        // }, 400);
 }
 
 /**

@@ -4,6 +4,8 @@ const express = require('express');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const { TikTokConnectionWrapper, getGlobalConnectionCount } = require('./connectionWrapper');
+const ConsumerQueue = require('consumer-queue');
+const queue = new ConsumerQueue();
 
 const app = express();
 const httpServer = createServer(app);
@@ -15,9 +17,27 @@ const io = new Server(httpServer, {
     }
 });
 
+
 io.on('connection', (socket) => {
     let tiktokConnectionWrapper;
 
+    function enqueue(type, msg) {
+        const value = { type, msg };
+        // console.log('enqueue', type, msg);
+        queue.push(value);
+    }
+
+    function loop() {
+        return queue.pop().then((value) => {
+            // console.log('dequeue', value)
+            const { type, msg } = value;
+            socket.emit(type, msg)
+            // setInterval(() => {
+            //     return loop();
+            // }, 1000);
+            return loop();
+        });
+    }
     socket.on('setUniqueId', (uniqueId, options) => {
 
         // Prohibit the client from specifying these options (for security reasons)
@@ -41,7 +61,10 @@ io.on('connection', (socket) => {
         }
 
         // Redirect wrapper control events once
-        tiktokConnectionWrapper.once('connected', state => socket.emit('tiktokConnected', state));
+        tiktokConnectionWrapper.once('connected', state => {
+            loop();
+            socket.emit('tiktokConnected', state)}
+        );
         tiktokConnectionWrapper.once('disconnected', reason => socket.emit('tiktokDisconnected', reason));
 
         // Notify client when stream ends
@@ -49,10 +72,10 @@ io.on('connection', (socket) => {
 
         // Redirect message events
         tiktokConnectionWrapper.connection.on('roomUser', msg => socket.emit('roomUser', msg));
-        tiktokConnectionWrapper.connection.on('member', msg => socket.emit('member', msg));
-        tiktokConnectionWrapper.connection.on('chat', msg => socket.emit('chat', msg));
-        tiktokConnectionWrapper.connection.on('gift', msg => socket.emit('gift', msg));
-        tiktokConnectionWrapper.connection.on('social', msg => socket.emit('social', msg));
+        tiktokConnectionWrapper.connection.on('member', msg => enqueue('member', msg));
+        tiktokConnectionWrapper.connection.on('chat', msg => enqueue('chat', msg));
+        tiktokConnectionWrapper.connection.on('gift', msg => enqueue('gift', msg));
+        tiktokConnectionWrapper.connection.on('social', msg => enqueue('social', msg));
         tiktokConnectionWrapper.connection.on('like', msg => socket.emit('like', msg));
         tiktokConnectionWrapper.connection.on('questionNew', msg => socket.emit('questionNew', msg));
         tiktokConnectionWrapper.connection.on('linkMicBattle', msg => socket.emit('linkMicBattle', msg));

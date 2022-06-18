@@ -1,6 +1,9 @@
+// import * as THREE from 'three';
+
 // This will use the demo backend if you open index.html locally via file://, otherwise your server will be used
 let backendUrl = location.protocol === 'file:' ? "https://tiktok-chat-reader.zerody.one/" : undefined;
 let connection = new TikTokIOConnection(backendUrl);
+console.log(backendUrl)
 
 // Counter
 let viewerCount = 0;
@@ -75,7 +78,7 @@ function addChatItem(color, data, text, summarize) {
 
     var newDiv = document.createElement("div");
     // container.find('.temporary').remove();;
-    //<b>${generateUsernameLink(data)}:</b> 
+    //<b>${generateUsernameLink(data)}:</b>
     newDiv.innerHTML = `
         <div>
             <span>
@@ -113,7 +116,7 @@ function addChatItem(color, data, text, summarize) {
     // // in JavaScript. Instead, we need to call the add() function:
     // path.lineTo(start.add([200, -50]));
     // // Draw the view now:
-    // paper.view.draw(); 
+    // paper.view.draw();
 
 }
 
@@ -267,27 +270,27 @@ function autoType(elementClass, typingSpeed) {
 }
 
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.getElementById('myCanvas').appendChild(renderer.domElement);
-
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
-
-camera.position.z = 5;
-
-function animate() {
-    requestAnimationFrame(animate);
-
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-
-    renderer.render(scene, camera);
-};
-
-animate();
+// const scene = new THREE.Scene();
+// const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+//
+// const renderer = new THREE.WebGLRenderer();
+// renderer.setSize(window.innerWidth, window.innerHeight);
+// document.getElementById('myCanvas').appendChild(renderer.domElement);
+//
+// const geometry = new THREE.BoxGeometry(1, 1, 1);
+// const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+// const cube = new THREE.Mesh(geometry, material);
+// scene.add(cube);
+//
+// camera.position.z = 5;
+//
+// function animate() {
+//     requestAnimationFrame(animate);
+//
+//     cube.rotation.x += 0.01;
+//     cube.rotation.y += 0.01;
+//
+//     renderer.render(scene, camera);
+// };
+//
+// animate();

@@ -1,12 +1,11 @@
 require('dotenv').config();
-
+const fs = require('fs');
 const express = require('express');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const { TikTokConnectionWrapper, getGlobalConnectionCount } = require('./connectionWrapper');
 const ConsumerQueue = require('consumer-queue');
 const queue = new ConsumerQueue();
-
 const app = express();
 const httpServer = createServer(app);
 
@@ -17,6 +16,7 @@ const io = new Server(httpServer, {
     }
 });
 
+const storage = []
 
 io.on('connection', (socket) => {
     let tiktokConnectionWrapper;
@@ -24,6 +24,8 @@ io.on('connection', (socket) => {
     function enqueue(type, msg) {
         const value = { type, msg };
         // console.log('enqueue', type, msg);
+        // console.log(JSON.stringify(value));
+        storage.push(value);
         queue.push(value);
     }
 
@@ -44,6 +46,13 @@ io.on('connection', (socket) => {
     function stopLoop(){
         console.log('stopLoop')
         queue.cancelWait();
+        // console.log(JSON.stringify(storage));
+        // fs.writeFile('test.json', JSON.stringify(storage), err => {
+        //     if (err) {
+        //         console.error(err);
+        //     }
+        //     // file written successfully
+        // });
     }
 
     socket.on('setUniqueId', (uniqueId, options) => {
@@ -62,7 +71,7 @@ io.on('connection', (socket) => {
         // Connect to the given username (uniqueId)
         try {
             tiktokConnectionWrapper = new TikTokConnectionWrapper(uniqueId, options, true);
-            tiktokConnectionWrapper.connect();      
+            tiktokConnectionWrapper.connect();
         } catch(err) {
             socket.emit('disconnected', err.toString());
             return;
@@ -71,7 +80,7 @@ io.on('connection', (socket) => {
         // Redirect wrapper control events once
         tiktokConnectionWrapper.once('connected', state => {
             console.log('startLoop')
-            loop();      
+            loop();
             socket.emit('tiktokConnected', state)}
         );
         tiktokConnectionWrapper.once('disconnected', reason => {
@@ -96,6 +105,7 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         stopLoop();
+        // console.log(JSON.stringify(storage));
         if(tiktokConnectionWrapper) {
             tiktokConnectionWrapper.disconnect();
         }

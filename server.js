@@ -9,6 +9,8 @@ const queue = new ConsumerQueue();
 const app = express();
 const httpServer = createServer(app);
 
+const dataSource = 0; // 1: online; 2: dummy data
+
 // Enable cross origin resource sharing
 const io = new Server(httpServer, {
     cors: {
@@ -19,13 +21,14 @@ const io = new Server(httpServer, {
 const storage = []
 
 io.on('connection', (socket) => {
+
     let tiktokConnectionWrapper;
 
     function enqueue(type, msg) {
         const value = { type, msg };
         // console.log('enqueue', type, msg);
         // console.log(JSON.stringify(value));
-        storage.push(value);
+        // storage.push(value);
         queue.push(value);
     }
 
@@ -57,50 +60,81 @@ io.on('connection', (socket) => {
 
     socket.on('setUniqueId', (uniqueId, options) => {
 
-        // Prohibit the client from specifying these options (for security reasons)
-        if (typeof options === 'object') {
-            delete options.requestOptions;
-            delete options.websocketOptions;
+        if ( dataSource === 1) {
+            // Prohibit the client from specifying these options (for security reasons)
+            if (typeof options === 'object') {
+                delete options.requestOptions;
+                delete options.websocketOptions;
+            }
+
+            // Is the client already connected to a stream? => Disconnect
+            if (tiktokConnectionWrapper) {
+                tiktokConnectionWrapper.disconnect();
+            }
+
+            // Connect to the given username (uniqueId)
+            try {
+                tiktokConnectionWrapper = new TikTokConnectionWrapper(uniqueId, options, true);
+                tiktokConnectionWrapper.connect();
+            } catch(err) {
+                socket.emit('disconnected', err.toString());
+                return;
+            }
+
+            // Redirect wrapper control events once
+            tiktokConnectionWrapper.once('connected', state => {
+                    console.log('startLoop, online data')
+                    loop();
+                    socket.emit('tiktokConnected', state)
+                }
+            );
+            tiktokConnectionWrapper.once('disconnected', reason => {
+                socket.emit('tiktokDisconnected', reason)
+            });
+
+            // Notify client when stream ends
+            tiktokConnectionWrapper.connection.on('streamEnd', () => socket.emit('streamEnd'));
+
+            // Redirect message events
+            tiktokConnectionWrapper.connection.on('roomUser', msg => enqueue('roomUser', msg));
+            // tiktokConnectionWrapper.connection.on('member', msg => enqueue('member', msg));
+            tiktokConnectionWrapper.connection.on('chat', msg => enqueue('chat', msg));
+            tiktokConnectionWrapper.connection.on('gift', msg => enqueue('gift', msg));
+            tiktokConnectionWrapper.connection.on('social', msg => enqueue('social', msg));
+            tiktokConnectionWrapper.connection.on('like', msg => enqueue('like', msg));
+            tiktokConnectionWrapper.connection.on('questionNew', msg => enqueue('questionNew', msg));
+            tiktokConnectionWrapper.connection.on('linkMicBattle', msg => enqueue('linkMicBattle', msg));
+            tiktokConnectionWrapper.connection.on('linkMicArmies', msg => enqueue('linkMicArmies', msg));
+            tiktokConnectionWrapper.connection.on('liveIntro', msg => enqueue('liveIntro', msg));
+        } else {
+            console.log('startLoop, dummy data')
+            // loop();
+            socket.emit('tiktokConnected', {
+                roomId: "dummy"
+            })
+            fs.readFile('test.json', (err, buffer) => {
+                if (err) throw err;
+                let dummy = JSON.parse(buffer);
+                // dummy.forEach(function(item){
+                //     socket.emit(item.type, item.msg);
+                // });
+                dummySeq(dummy, 0);
+            });
+            function sleep (time) {
+                return new Promise((resolve) => setTimeout(resolve, time));
+            }
+            function dummySeq ( dummy, index ) {
+                sleep(1000).then(()=>{
+                    if (index >= dummy.length) return;
+                    const item = dummy[index];
+                    console.log(item);
+                    socket.emit(item.type, item.msg);
+                    index ++;
+                    dummySeq(dummy , index);
+                });
+            }
         }
 
-        // Is the client already connected to a stream? => Disconnect
-        if (tiktokConnectionWrapper) {
-            tiktokConnectionWrapper.disconnect();
-        }
-
-        // Connect to the given username (uniqueId)
-        try {
-            tiktokConnectionWrapper = new TikTokConnectionWrapper(uniqueId, options, true);
-            tiktokConnectionWrapper.connect();
-        } catch(err) {
-            socket.emit('disconnected', err.toString());
-            return;
-        }
-
-        // Redirect wrapper control events once
-        tiktokConnectionWrapper.once('connected', state => {
-            console.log('startLoop')
-            loop();
-            socket.emit('tiktokConnected', state)}
-        );
-        tiktokConnectionWrapper.once('disconnected', reason => {
-            socket.emit('tiktokDisconnected', reason)
-        });
-
-        // Notify client when stream ends
-        tiktokConnectionWrapper.connection.on('streamEnd', () => socket.emit('streamEnd'));
-
-        // Redirect message events
-        tiktokConnectionWrapper.connection.on('roomUser', msg => enqueue('roomUser', msg));
-        // tiktokConnectionWrapper.connection.on('member', msg => enqueue('member', msg));
-        tiktokConnectionWrapper.connection.on('chat', msg => enqueue('chat', msg));
-        tiktokConnectionWrapper.connection.on('gift', msg => enqueue('gift', msg));
-        tiktokConnectionWrapper.connection.on('social', msg => enqueue('social', msg));
-        tiktokConnectionWrapper.connection.on('like', msg => enqueue('like', msg));
-        tiktokConnectionWrapper.connection.on('questionNew', msg => enqueue('questionNew', msg));
-        tiktokConnectionWrapper.connection.on('linkMicBattle', msg => enqueue('linkMicBattle', msg));
-        tiktokConnectionWrapper.connection.on('linkMicArmies', msg => enqueue('linkMicArmies', msg));
-        tiktokConnectionWrapper.connection.on('liveIntro', msg => enqueue('liveIntro', msg));
     });
 
     socket.on('disconnect', () => {

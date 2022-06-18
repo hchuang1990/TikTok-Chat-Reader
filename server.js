@@ -9,7 +9,7 @@ const queue = new ConsumerQueue();
 const app = express();
 const httpServer = createServer(app);
 
-const dataSource = 0; // 1: online; 2: dummy data
+const dataSource = 1; // 1: online; 2: dummy data
 
 // Enable cross origin resource sharing
 const io = new Server(httpServer, {
@@ -124,12 +124,16 @@ io.on('connection', (socket) => {
                 return new Promise((resolve) => setTimeout(resolve, time));
             }
             function dummySeq ( dummy, index ) {
-                sleep(1000).then(()=>{
-                    if (index >= dummy.length) return;
-                    const item = dummy[index];
-                    console.log(item);
-                    socket.emit(item.type, item.msg);
-                    index ++;
+                console.log(dummy.length);
+                sleep(500).then(()=>{
+                    if (index >= dummy.length) {
+                        index = 0;
+                    } else {
+                        const item = dummy[index];
+                        console.log(item);
+                        socket.emit(item.type, item.msg);
+                        index ++;
+                    }
                     dummySeq(dummy , index);
                 });
             }

@@ -36,6 +36,7 @@ io.on('connection', (socket) => {
         return queue.pop().then((value) => {
             // console.log('dequeue', value)
             const { type, msg } = value;
+            console.log(value);
             socket.emit(type, msg)
             // setInterval(() => {
             //     return loop();
@@ -97,7 +98,7 @@ io.on('connection', (socket) => {
 
             // Redirect message events
             tiktokConnectionWrapper.connection.on('roomUser', msg => enqueue('roomUser', msg));
-            // tiktokConnectionWrapper.connection.on('member', msg => enqueue('member', msg));
+            tiktokConnectionWrapper.connection.on('member', msg => enqueue('member', msg));
             tiktokConnectionWrapper.connection.on('chat', msg => enqueue('chat', msg));
             tiktokConnectionWrapper.connection.on('gift', msg => enqueue('gift', msg));
             tiktokConnectionWrapper.connection.on('social', msg => enqueue('social', msg));
@@ -112,7 +113,7 @@ io.on('connection', (socket) => {
             socket.emit('tiktokConnected', {
                 roomId: "dummy"
             })
-            fs.readFile('test.json', (err, buffer) => {
+            fs.readFile('test1.json', (err, buffer) => {
                 if (err) throw err;
                 let dummy = JSON.parse(buffer);
                 // dummy.forEach(function(item){
@@ -125,7 +126,7 @@ io.on('connection', (socket) => {
             }
             function dummySeq ( dummy, index ) {
                 console.log(dummy.length);
-                sleep(500).then(()=>{
+                sleep(10).then(()=>{
                     if (index >= dummy.length) {
                         index = 0;
                     } else {
